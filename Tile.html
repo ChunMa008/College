@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        background-color: black;
+        display: flex;
+        justify-content: center;
+    }
+
+    .container {
+        background-color: white;
+        width: 25%;
+        height: 100vh;
+    }
+
+    .level-container{
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 25%;
+    }
+
+    .tiles-container{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 150px);
+        height: 50vh;
+        padding: 20px;
+        margin: 5px;
+        grid-gap: 10px;
+        border: 2px solid;
+    }
+
+    .tiles-container button{
+        border: none;
+        background-color: cyan;
+    }
+
+    .tiles-container button:disabled{
+        opacity: 1;
+        border: none;
+        background-color: cyan;
+    }
+
+    #resultDisplay{
+        margin-top: 40px;
+        text-align: center;
+    }
+    .clicked{
+        background-color: magenta;
+    }
+    
+
+</style>
+<body>
+    <div class="container">
+        <div class="level-container">
+            <h1 id="levelDisplay">Level 1</h1>
+        </div>
+
+        <div class="tiles-container">
+            <button class="tile" id="tile1"></button>
+            <button class="tile" id="tile2"></button>
+            <button class="tile" id="tile3"></button>
+            <button class="tile" id="tile4"></button>
+            <button class="tile" id="tile5"></button>
+            <button class="tile" id="tile6"></button>
+            <button class="tile" id="tile7"></button>
+            <button class="tile" id="tile8"></button>
+            <button class="tile" id="tile9"></button>
+        </div>
+
+        <h3 id="resultDisplay"></h3>
+    </div>
+
+    <script>
+        const levelDisplay = document.getElementById("levelDisplay");
+        const resultDisplay = document.getElementById("resultDisplay");
+        const tiles = document.querySelectorAll(".tile");
+        let highlightedTiles = [];
+        let level = 1;
+
+        function randomHighlightedTile(level){
+            tiles.forEach(tile => {
+                tile.style.backgroundColor = "cyan";
+                tile.disabled = true;
+            });
+
+            highlightedTiles = [];
+
+            for(let i = 0; i < level; i++){
+                let randomTileIndex = Math.floor(Math.random() * tiles.length);
+                highlightedTiles.push(tiles[randomTileIndex]);
+            }
+
+            highlightedTiles.forEach((tile, index) => {
+                setTimeout(() => {
+                    tile.style.backgroundColor = "magenta";
+                    setTimeout(() => {
+                        tile.style.backgroundColor = "cyan"
+                        if(index === highlightedTiles.length - 1){
+                            tiles.forEach(tile => tile.disabled = false);
+                        }
+                    }, 500);
+                }, index * 500);
+            });
+
+            let answer = [];
+            highlightedTiles.forEach(tile => {
+                answer.push(`${tile.id}`);
+            });
+            console.log(answer);
+        }
+
+        function handleTileClick(event){
+            const clickedTile = event.target;
+
+            setTimeout(() => {
+                clickedTile.style.backgroundColor = "magenta";
+                setTimeout(() => {
+                    clickedTile.style.backgroundColor = "cyan";
+                }, 100);
+            }, 10);
+
+            if(highlightedTiles.includes(clickedTile)){
+                highlightedTiles.shift();
+                clickedTile.style.backgroundColor = "cyan";
+
+                if(highlightedTiles.length === 0){
+                    level++;
+                    levelDisplay.textContent = `Level ${level}`;
+                    resultDisplay.textContent = "You Win! Next Level!";
+                    tiles.forEach(tile => tile.disabled = true);
+                    
+                    setTimeout(() => {
+                        resultDisplay.textContent = "";
+                        tiles.forEach(tile => tile.disabled = false);
+                        randomHighlightedTile(level);
+                    }, 500);
+                    
+                }
+            } else {
+                level = 1;
+                levelDisplay.textContent = `Level ${level}`;
+                resultDisplay.textContent = "You Lose! Try Again!";
+                tiles.forEach(tile => tile.disabled = true);
+
+                setTimeout(() => {
+                    resultDisplay.textContent = "";
+                    tiles.forEach(tile => tile.disabled = false);
+                    randomHighlightedTile(level);
+                }, 1000);
+            }
+        }
+
+        tiles.forEach(tile => {
+            tile.addEventListener("click", handleTileClick);
+        });
+
+        randomHighlightedTile(level);
+    </script>
+</body>
+</html>

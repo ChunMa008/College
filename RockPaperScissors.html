@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    #enemy{
+        text-align: center;
+    }
+
+    h1{
+    font-size: 4rem;
+    text-align: center;
+    }
+
+    #enemyMoves{
+        text-align: center;
+        font-size: 5rem;
+    }
+
+    #allyMoves{
+        text-align: center;
+        font-size: 5rem;
+    }
+
+    .yourSection{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    #allyMoves{
+        visibility: hidden;
+    }
+
+    .yourMoves button{
+        font-size: 5rem;
+        border: none;
+        background-color: white;
+        
+    }
+
+    #submit{
+        font-size: 25px;
+        background-color: #0d6efd;
+        color: white;
+        border-radius: 10px;
+        padding: 10px;
+    }
+    #tryAgain{
+        font-size: 25px;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .scoreCount{
+        position: absolute;
+    }
+
+</style>
+<body>
+    <div class="scoreCount" style="margin-left: 50px;">
+        <h2>Score</h2>
+        <h3 id="enemyScore">Enemy Score: </h3>
+        <h3 id="yourScore">Your Score: </h3>
+    </div>
+
+    <div class="enemySection" id="enemy">
+        <h1>Enemy:</h1>
+        <div id="enemyMoves">
+
+        </div>
+    </div>
+    
+
+    <div>
+        <h1>VS</h1>
+    </div>
+
+    <div class="yourSection" id="ally">
+        <div id="allyMoves">
+            ✊
+        </div>
+        <div class="yourMoves" id="yourMoves">
+            
+            <button class="btn" value="✊">✊</button>
+            <button class="btn" value="✋">✋</button>
+            <button class="btn" value="✌️">✌️</button>
+        </div>
+        <h1>You:</h1>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin-top: 50px;">
+        <button id="submit" onclick="submit()">Submit</button>
+        <button id="tryAgain" onclick="reloadPage()">Try Again</button>
+    </div>
+
+    <h1 id="result"></h1>
+    
+    
+
+    
+
+    <script>
+        
+        let result = document.getElementById("result");
+        let enemyMove = document.getElementById("enemyMoves");
+        let index = 0;
+
+
+        function enemyMoves(){
+            if(index === 3){
+                index = 0;
+                return;
+            }
+
+            const moves = ["✊", "✋", "✌️"];
+            enemyMove.textContent = moves[index];
+            index += 1;
+        }
+        let intervalId = setInterval(enemyMoves, 30);
+        
+
+        let currentMove = document.getElementById("allyMoves");
+        let yourMoves = document.querySelectorAll(".btn");
+        yourMoves.forEach(button => {
+            button.addEventListener("click", event => {
+                currentMove.textContent = button.textContent;
+                currentMove.style.visibility = "visible";
+
+                yourMoves.forEach(btn => {
+                    if(btn !== button){
+                        btn.disabled = true;
+                    }
+                })
+            });
+        });
+        
+        let enemyScore = document.getElementById("enemyScore");
+        let yourScore = document.getElementById("yourScore");
+        let your_Score = 0;
+        let enemy_Score = 0;
+        const submitBtn = document.getElementById("submit");
+        const tryAgainBtn = document.getElementById("tryAgain");
+        tryAgainBtn.disabled = true;
+        function submit(){
+            clearInterval(intervalId);
+            if(currentMove.textContent == enemyMove.textContent){
+                result.textContent = `Result: Tie`;
+            }
+            else if((currentMove.textContent == "✊" && enemyMove.textContent == "✌️") ||
+                    (currentMove.textContent == "✋" && enemyMove.textContent == "✊") ||
+                    (currentMove.textContent == "✌️" && enemyMove.textContent == "✋")){
+                        result.textContent = "Result: You Win"
+                        your_Score++;
+                        yourScore.textContent = `Your Score: ${your_Score}`
+                    }
+            else {
+                result.textContent = "Result: You Lose";
+                enemy_Score++;
+                enemyScore.textContent = `Enemy Score: ${enemy_Score}`
+            }
+            submitBtn.disabled = true;
+            tryAgainBtn.disabled = false;
+        }
+
+        function reloadPage(){
+            intervalId = setInterval(enemyMoves, 30);
+            result.textContent = "";
+
+            yourMoves.forEach(btn => {
+                btn.disabled = false;
+            });
+
+            submitBtn.disabled = false;
+            tryAgainBtn.disabled = true;
+        }
+
+        
+    </script>
+</body>
+</html>
